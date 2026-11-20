@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="theme-color" content="#0c1422">
+  <meta name="description" content="按职业发现 GitHub 项目，按 Star 排序，离线浏览与本机收藏。">
+  <title>GitHub Atlas · 开源项目导航</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="catalog.js"></script>
+  <script defer src="main.js"></script>
+</head>
+<body>
+  <a class="skip" href="#projects">跳到项目列表</a>
+  <header class="top">
+    <a class="brand" href="./index.html"><span class="brand-icon" aria-hidden="true">A</span><span>GitHub <b>Atlas</b><small>开源项目导航</small></span></a>
+    <nav id="sections" aria-label="浏览方式">
+      <button type="button" data-view="roles" aria-pressed="true">职业导航</button>
+      <button type="button" data-view="all" aria-pressed="false">全部项目</button>
+      <button type="button" data-view="saved" aria-pressed="false">我的收藏 <span id="saved-count">0</span></button>
+    </nav>
+    <a class="source-link" href="https://github.com/chenmingyu12345/github-Atlas" target="_blank" rel="noopener noreferrer">项目源码 ↗</a>
+  </header>
+  <div class="shell">
+    <aside>
+      <p class="aside-label">职业分类</p>
+      <div id="role-list" aria-label="选择职业"></div>
+      <div class="aside-note"><span aria-hidden="true"></span><div><b>离线项目索引</b><p id="aside-count"></p></div></div>
+    </aside>
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="orbit" aria-hidden="true"><i></i><i></i><i></i><em></em><em></em><em></em></div>
+        <div class="hero-text">
+          <span class="eyebrow">GITHUB ATLAS</span>
+          <h1 id="hero-title">按职业找到开源工具</h1>
+          <p id="hero-detail">选择一个职业，查看适合你日常工作的开源项目。</p>
+        </div>
+        <div class="hero-stat"><strong id="hero-total">—</strong><span id="hero-total-label">索引项目</span></div>
+      </section>
+      <section id="projects" class="results" aria-labelledby="list-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">项目目录</p><h2 id="list-title">精选推荐</h2></div>
+          <span id="result-count" role="status" aria-live="polite"></span>
+        </div>
+        <div class="controls">
+          <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" aria-label="搜索项目" placeholder="搜索项目名、用途或标签…"></label>
+          <label class="field"><span>分类</span><select id="category" aria-label="按分类筛选"><option value="">全部分类</option></select></label>
+          <label class="field"><span>排序</span><select id="sort" aria-label="项目排序"><option value="stars">Star 从高到低</option><option value="updated">最近更新</option><option value="name">名称 A–Z</option></select></label>
+        </div>
+        <div class="grid" id="results"></div>
+        <div id="empty" class="empty" hidden></div>
+        <div class="pagination" id="pagination"><button id="prev" type="button">← 上一页</button><span id="page-count"></span><button id="next" type="button">下一页 →</button></div>
+      </section>
+      <footer>
+        <span id="snapshot">数据为发布时的快照。</span>
+        <a href="https://github.com/DaiYiqq/orbit-github-nav" target="_blank" rel="noopener noreferrer">Orbit 数据来源 ↗</a>
+        <a href="https://github.com/chenmingyu12345/github-Atlas/releases" target="_blank" rel="noopener noreferrer">下载更新 ↗</a>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

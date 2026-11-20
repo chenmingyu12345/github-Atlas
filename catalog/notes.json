@@ -1,0 +1,22 @@
+{
+  "hiroi-sora/umi-ocr": "把截图、扫描件和图片中的文字提取到文档。",
+  "localsend/localsend": "手机和电脑在同一局域网内互传文件。",
+  "libreoffice/core": "用 Calc 做台账、汇总和 CSV 数据处理。",
+  "openrefine/openrefine": "批量清理供应商、客户或商品名称。",
+  "paperless-ngx/paperless-ngx": "把扫描件归档成可搜索的文档库，需要自行部署。",
+  "stirling-tools/stirling-pdf": "合并、拆分或转换 PDF，先核对版本和部署方式。",
+  "jgraph/drawio": "画审批流程、业务流程和系统结构图。",
+  "logseq/logseq": "用大纲和双链整理会议记录与项目知识。",
+  "obsproject/obs-studio": "录屏、录课、制作软件演示和直播。",
+  "excalidraw/excalidraw": "快速画草图、流程图和讨论板。",
+  "penpot/penpot": "团队协作设计界面和制作交互原型。",
+  "metabase/metabase": "把业务数据做成可筛选的指标看板。",
+  "apache/superset": "构建数据分析和运营可视化看板。",
+  "frappe/erpnext": "集中管理销售、库存和财务流程，需要部署配置。",
+  "actualbudget/actual": "做个人或小团队预算跟踪。",
+  "jupyterlab/jupyterlab": "在笔记本中完成数据探索和教学演示。",
+  "blender/blender": "创建 3D 模型、动画和渲染画面。",
+  "sharex/sharex": "截屏、录制和整理常用截图流程。",
+  "zyronon/typewords": "练习英文单词拼写和键盘输入。",
+  "ankitects/anki": "制作闪卡并按间隔重复复习。"
+}
