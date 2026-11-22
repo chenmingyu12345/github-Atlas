@@ -3,6 +3,7 @@
   "main": "worker.js",
   "compatibility_date": "2025-01-01",
   "vars": { "ATLAS_ORIGIN": "https://chenmingyu12345.github.io" },
+  "ratelimits": [{ "name": "ACCOUNT_LIMIT", "namespace_id": "104329", "simple": { "limit": 12, "period": 60 } }],
   "d1_databases": [
     {
       "binding": "DB",

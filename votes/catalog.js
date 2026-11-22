@@ -1,3 +1,5 @@
+import {adminUsers} from "./users.js";
+
 const publicColumns = `id, bookmark_key AS bookmarkKey, name, kind, task, audiences,
   description, url, keywords, repository, stars, ballot_id AS ballotId`;
 const roleKeys = new Set(["student","office","education","finance","creative","operations","data","project"]);
@@ -63,6 +65,9 @@ export async function publicCatalog(request, env, respond) {
 
 export async function adminCatalog(request, env, respond, path) {
   if (!await checkToken(request, env.ATLAS_ADMIN_TOKEN)) return respond({error: "管理密钥无效"}, 401);
+  if (path === "/admin/users" || path.startsWith("/admin/users/")) {
+    return adminUsers(request, env, respond, path);
+  }
   if (request.method === "GET" && path === "/admin/resources") {
     const {results} = await env.DB.prepare(`
       SELECT ${publicColumns}, visible, updated_at AS updatedAt

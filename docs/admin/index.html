@@ -6,10 +6,10 @@
   <meta name="robots" content="noindex,nofollow">
   <title>管理后台 · 效率工具图鉴</title>
   <link rel="stylesheet" href="../style.css">
-  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="admin.css?v=users">
   <script src="../tools.js" defer></script>
   <script src="../vote-config.js" defer></script>
-  <script src="admin.js" defer></script>
+  <script src="admin.js?v=users" defer></script>
 </head>
 <body>
   <header class="top"><div class="admin-shell top-inner">
@@ -27,9 +27,17 @@
       </form>
     </section>
     <section id="dashboard" hidden>
+      <div class="admin-navigation">
+        <nav aria-label="后台管理">
+          <button type="button" class="secondary" id="nav-resources" aria-pressed="true">资源管理</button>
+          <button type="button" class="secondary" id="nav-users" aria-pressed="false">用户管理</button>
+        </nav>
+        <button type="button" class="secondary" id="logout">退出后台</button>
+      </div>
+      <section id="resources-view">
       <div class="admin-heading">
         <div><h1>资源管理</h1><p id="metrics"></p></div>
-        <div class="header-actions"><button type="button" id="add" class="primary">新增资源</button><button type="button" id="logout" class="secondary">退出</button></div>
+        <div class="header-actions"><button type="button" id="add" class="primary">新增资源</button></div>
       </div>
       <div class="admin-panel">
         <div class="filters">
@@ -45,6 +53,29 @@
           </table>
         </div>
       </div>
+      </section>
+      <section id="users-view" hidden>
+        <div class="admin-heading"><div><h1>用户管理</h1><p>查看注册账号，停用或恢复登录权限。</p></div></div>
+        <div class="admin-panel">
+          <form id="users-search" class="filters">
+            <label>搜索用户<input id="user-query" type="search" placeholder="账号或昵称" maxlength="64"></label>
+            <label>状态<select id="user-state"><option value="">全部状态</option><option value="1">正常</option><option value="0">已停用</option></select></label>
+            <button class="primary" type="submit">搜索</button>
+          </form>
+          <p id="users-status" role="status"></p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th scope="col">账号</th><th scope="col">昵称</th><th scope="col">状态</th><th scope="col">注册时间</th><th scope="col">最近登录</th><th scope="col">操作</th></tr></thead>
+              <tbody id="user-rows"></tbody>
+            </table>
+          </div>
+          <div class="user-pages">
+            <button class="secondary" type="button" id="users-prev">上一页</button>
+            <span id="users-pages"></span>
+            <button class="secondary" type="button" id="users-next">下一页</button>
+          </div>
+        </div>
+      </section>
     </section>
     <dialog id="editor">
       <form id="resource-form">

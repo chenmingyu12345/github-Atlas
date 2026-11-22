@@ -6,20 +6,35 @@
   <meta name="description" content="为学生和上班族整理的效率工具导航。按行业、岗位和具体任务找到适合的工具。">
   <meta name="theme-color" content="#f5f7f6">
   <title>效率工具图鉴 · GitHub Atlas</title>
-  <link rel="stylesheet" href="style.css?v=vote-icons">
+  <link rel="stylesheet" href="style.css?v=accounts">
   <link rel="icon" href="assets/online.webp" type="image/webp">
   <script src="tools.js?v=skill-feedback" defer></script>
   <script src="stars.js?v=skill-feedback" defer></script>
   <script src="skill-sources.js" defer></script>
   <script src="ballots.js" defer></script>
   <script src="vote-config.js" defer></script>
-  <script src="main.js?v=managed-catalog" defer></script>
+  <script src="account.js" defer></script>
+  <script src="main.js?v=accounts" defer></script>
 </head>
 <body>
   <header class="top"><div class="wrap top-inner">
     <a class="brand" href="./"><img class="brand-icon" src="assets/online.webp" alt="" width="38" height="38">效率工具图鉴</a>
-    <button class="library" id="saved" type="button" aria-pressed="false"><span aria-hidden="true">☆</span> 我的收藏 <span id="saved-count">0</span></button>
+    <div class="top-actions">
+      <button class="library" id="saved" type="button" aria-pressed="false"><span aria-hidden="true">☆</span> 我的收藏 <span id="saved-count">0</span></button>
+      <button class="library" id="account-open" type="button" hidden>登录</button>
+    </div>
   </div></header>
+  <dialog class="account-dialog" id="account-dialog">
+    <div class="account-heading"><h2 id="account-title">登录</h2><button id="account-close" class="library" type="button">关闭</button></div>
+    <form id="account-form">
+      <label>账号<input name="username" required minlength="3" maxlength="32" pattern="[A-Za-z0-9_]+" autocomplete="username" placeholder="字母、数字或下划线"></label>
+      <label id="account-nickname" hidden>昵称<input name="displayName" maxlength="32" autocomplete="nickname"></label>
+      <label>密码<input name="password" type="password" required minlength="10" maxlength="128" autocomplete="current-password"></label>
+      <div class="account-buttons"><button type="submit" class="account-primary">登录</button><button type="button" class="library" id="account-mode">注册账号</button></div>
+    </form>
+    <div id="account-profile" hidden><p id="account-user"></p><button type="button" class="library" id="account-logout">退出登录</button></div>
+    <p id="account-status" role="status"></p>
+  </dialog>
   <main class="wrap">
     <section class="hero" aria-labelledby="title">
       <div class="hero-content">

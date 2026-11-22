@@ -13,6 +13,13 @@ body { background: #f4f7f5; }
 .admin-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-block: 30px 16px; }
 .admin-heading p { margin: 8px 0 0; color: var(--muted); }
 .header-actions { display: flex; gap: 8px; }
+.admin-navigation { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; margin-top: 24px; }
+.admin-navigation nav { display: flex; gap: 6px; }
+.admin-navigation [aria-pressed=true] { background: #e3f2ea; border-color: #acd0bd; }
+#users-status { min-height: 1.3em; margin: 0; color: var(--muted); font-size: .9rem; }
+#users-search button { align-self: end; justify-self: start; }
+.user-pages { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 11px; color: var(--muted); font-size: .9rem; }
+.user-pages button:disabled { cursor: default; opacity: .5; }
 .admin-panel { padding: 16px; margin-bottom: 24px; }
 .filters { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 label { display: grid; gap: 4px; color: #425551; font-size: .92rem; font-weight: 600; }

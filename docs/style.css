@@ -24,6 +24,18 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .library > span:first-child { color: var(--accent); font-size: 1.1rem; }
 #saved-count { margin-inline-start: 3px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .library[aria-pressed=true] { background: #e3f5ed; border-color: #9fc8b9; }
+.top-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+#account-open { max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.account-dialog { width: min(430px, calc(100% - 32px)); border: 1px solid var(--line); border-radius: 15px; padding: 20px; color: var(--ink); }
+.account-dialog::backdrop { background: #0e2c216d; }
+.account-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; }
+.account-heading h2 { margin: 0; }
+#account-form { display: grid; gap: 10px; }
+#account-form label { display: grid; gap: 4px; color: var(--muted); font-size: .92rem; }
+#account-form input { padding: 8px; border: 1px solid #c8dad0; border-radius: 7px; font: inherit; color: var(--ink); width: 100%; }
+.account-buttons { display: flex; gap: 8px; margin-top: 4px; }
+.account-primary { padding: 8px 12px; border: 0; border-radius: 8px; color: #fff; background: #175344; font-weight: 650; }
+#account-status { margin: 8px 0 0; color: var(--muted); font-size: .87rem; }
 .hero { position: relative; overflow: hidden; margin-top: 24px; min-height: 285px; display: flex; align-items: center; border-radius: 21px; background: #102822 url("assets/hero.webp") center / cover no-repeat; color: white; }
 
 .hero-content { padding: 30px 44px 34px; z-index: 1; width: min(650px,100%); }
@@ -103,6 +115,8 @@ h1 { font-size: clamp(2rem, 4.5vw, 3.35rem); line-height: 1.12; letter-spacing: 
   .search input { font-size: .94rem; }
   .search button { padding-inline: 9px; }
   .role-icon { display: none; }
+  .top-actions .library { padding-inline: 6px; white-space: nowrap; }
+  .brand { font-size: 1rem; gap: 4px; }
 }
 @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
 [hidden] { display: none !important; }

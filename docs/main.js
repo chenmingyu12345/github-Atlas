@@ -53,6 +53,7 @@ let visibleCount = pageSize;
 let voteCounts;
 let voteRequest;
 let voter;
+const voteCredential = () => (typeof atlasAccount === "undefined" ? "" : atlasAccount.token()) || voter;
 const pendingVotes = new Set();
 const voteMessages = new Map();
 if (voteEndpoint) {
@@ -193,10 +194,10 @@ function showVoteCounts() {
       const total = choice === 1 ? counts?.recommend : counts?.notRecommend;
       button.querySelector(".vote-total").textContent = total === undefined ? "–" : starFormatter.format(total);
       button.setAttribute("aria-pressed", counts?.choice === choice);
-      button.disabled = !voter || pendingVotes.has(ballot) || voteCounts === undefined;
+      button.disabled = !voteCredential() || pendingVotes.has(ballot) || voteCounts === undefined;
     }
     section.querySelector(".vote-status").textContent = voteMessages.get(ballot)
-      || (voteEndpoint && !voter ? "请允许浏览器保存投票选择" : "")
+      || (voteEndpoint && !voteCredential() ? "请登录或允许浏览器保存投票选择" : "")
       || (counts ? "" : voteCounts === undefined ? "正在读取票数" : "票数暂不可用");
   }
 }
@@ -204,49 +205,58 @@ function showVoteCounts() {
 async function refreshVoteCounts() {
   if (voteRequest || pendingVotes.size || !results.querySelector("[data-ballot]")) return;
   const url = voteEndpoint || `https://api.github.com/repos/${ballotRepository}/issues?labels=skill-vote&state=all&per_page=100`;
-  const headers = voter ? {Authorization: `Bearer ${voter}`} : {};
+  const credential = voteCredential();
+  const headers = credential ? {Authorization: `Bearer ${credential}`} : {};
   voteRequest = fetch(url, {headers, signal: AbortSignal.timeout(5000)})
     .then(response => {
-      if (!response.ok) throw new Error("Cannot load GitHub votes");
+      if (response.status === 401 && credential === voteCredential() && credential?.startsWith("acct_")) atlasAccount.expire();
+      if (!response.ok) throw new Error("Cannot load votes");
       return response.json();
     })
     .then(rows => {
+      if (credential !== voteCredential()) return;
       voteCounts = new Map(voteEndpoint ? rows.map(row => [row.id, row])
         : rows.filter(row => row.reactions).map(row => [
             row.number, {recommend: row.reactions["+1"], notRecommend: row.reactions["-1"]},
           ]));
     })
-    .catch(() => { voteCounts ??= new Map(); })
+    .catch(() => { if (credential === voteCredential()) voteCounts ??= new Map(); })
     .finally(() => {
       voteRequest = undefined;
       showVoteCounts();
+      if (credential !== voteCredential()) refreshVoteCounts();
     });
 }
 
 async function castVote(id, choice) {
-  if (!voteEndpoint || !voter || pendingVotes.has(id) || voteCounts?.get(id)?.choice === choice) return;
+  const credential = voteCredential();
+  if (!voteEndpoint || !credential || pendingVotes.has(id) || voteCounts?.get(id)?.choice === choice) return;
   // Wait for an in-flight refresh before sending a new choice.
   pendingVotes.add(id);
   voteMessages.delete(id);
   showVoteCounts();
   try {
     if (voteRequest) await voteRequest;
+    if (credential !== voteCredential()) return;
     const response = await fetch(voteEndpoint, {
       method: "PUT",
-      headers: {Authorization: `Bearer ${voter}`, "Content-Type": "application/json"},
+      headers: {Authorization: `Bearer ${credential}`, "Content-Type": "application/json"},
       body: JSON.stringify({id, choice}),
       signal: AbortSignal.timeout(5000),
     });
+    if (response.status === 401 && credential === voteCredential() && credential.startsWith("acct_")) atlasAccount.expire();
     if (!response.ok) throw new Error("Vote was not confirmed");
     const updated = await response.json();
+    if (credential !== voteCredential()) return;
     voteCounts ??= new Map();
     voteCounts.set(id, updated);
     voteMessages.set(id, "已记票");
   } catch {
-    voteMessages.set(id, "未确认，请重试");
+    if (credential === voteCredential()) voteMessages.set(id, "未确认，请重试");
   } finally {
     pendingVotes.delete(id);
     showVoteCounts();
+    if (credential !== voteCredential()) refreshVoteCounts();
   }
 }
 
@@ -383,6 +393,12 @@ savedButton.addEventListener("click", () => {
   if (bookmarksOnly) byId("result-title").scrollIntoView({block: "nearest"});
 });
 search.addEventListener("input", () => render());
+document.addEventListener("atlas-account-changed", () => {
+  voteCounts = undefined;
+  voteMessages.clear();
+  showVoteCounts();
+  refreshVoteCounts();
+});
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) refreshVoteCounts();
 });

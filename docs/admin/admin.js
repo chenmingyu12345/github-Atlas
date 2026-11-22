@@ -10,6 +10,11 @@ let token = "";
 let entries = [];
 let totals = new Map();
 let editingId = "";
+let usersPage = 1;
+let usersRequest = 0;
+const userDate = new Intl.DateTimeFormat("zh-CN", {
+  dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Shanghai",
+});
 
 for (const [key, label] of Object.entries(tasks)) {
   if (key !== "all") field("task").add(new Option(label, key));
@@ -99,6 +104,9 @@ login.addEventListener("submit", async event => {
 
 byId("logout").addEventListener("click", () => {
   token = "";
+  usersRequest++;
+  byId("user-rows").replaceChildren();
+  switchPanel(false);
   entries = [];
   totals = new Map();
   tableBody.replaceChildren();
@@ -107,6 +115,80 @@ byId("logout").addEventListener("click", () => {
   byId("login-status").textContent = "";
   byId("admin-key").focus();
 });
+
+function switchPanel(showUsers) {
+  byId("resources-view").hidden = showUsers;
+  byId("users-view").hidden = !showUsers;
+  byId("nav-resources").setAttribute("aria-pressed", !showUsers);
+  byId("nav-users").setAttribute("aria-pressed", showUsers);
+  if (showUsers) loadUsers();
+}
+
+function userRow(user) {
+  const row = document.createElement("tr");
+  const date = value => value ? userDate.format(new Date(value)) : "—";
+  for (const value of [user.username, user.displayName, user.active ? "正常" : "已停用", date(user.createdAt), date(user.lastLoginAt)]) {
+    row.insertCell().textContent = value;
+  }
+  const button = document.createElement("button");
+  button.className = "secondary";
+  button.type = "button";
+  button.textContent = user.active ? "停用" : "恢复";
+  button.setAttribute("aria-label", `${button.textContent} ${user.username}`);
+  button.addEventListener("click", async () => {
+    button.disabled = true;
+    const status = byId("users-status");
+    try {
+      await request(`/admin/users/${user.id}`, {
+        method: "PUT", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({active: !user.active}),
+      });
+      await loadUsers(user.active ? "账号已停用，已有登录会话已退出。" : "账号已恢复登录权限。");
+    } catch (error) {
+      status.textContent = error.message;
+      button.disabled = false;
+    }
+  });
+  row.insertCell().append(button);
+  return row;
+}
+
+async function loadUsers(message = "") {
+  const requestId = ++usersRequest;
+  const status = byId("users-status");
+  const previous = byId("users-prev");
+  const next = byId("users-next");
+  previous.disabled = next.disabled = true;
+  status.textContent = "正在加载用户…";
+  const query = new URLSearchParams({q: byId("user-query").value, state: byId("user-state").value, page: usersPage});
+  try {
+    const {users, total, page} = await request("/admin/users?" + query);
+    if (requestId !== usersRequest) return;
+    const end = Math.max(1, Math.ceil(total / 25));
+    if (page > end) {
+      usersPage = end;
+      return loadUsers(message);
+    }
+    byId("user-rows").replaceChildren(...users.map(userRow));
+    byId("users-pages").textContent = `第 ${page} / ${end} 页 · ${total} 个账号`;
+    previous.disabled = page <= 1;
+    next.disabled = page >= end;
+    status.textContent = message || (users.length ? "" : "暂无匹配账号。");
+  } catch (error) {
+    if (requestId === usersRequest) status.textContent = error.message;
+  }
+}
+
+byId("nav-resources").addEventListener("click", () => switchPanel(false));
+byId("nav-users").addEventListener("click", () => switchPanel(true));
+byId("users-search").addEventListener("submit", event => {
+  event.preventDefault();
+  usersPage = 1;
+  loadUsers();
+});
+byId("user-state").addEventListener("change", () => { usersPage = 1; loadUsers(); });
+byId("users-prev").addEventListener("click", () => { usersPage--; loadUsers(); });
+byId("users-next").addEventListener("click", () => { usersPage++; loadUsers(); });
 
 function updateSkillField() {
   const isSkill = field("kind").value === "skill";

@@ -1,4 +1,5 @@
 import {adminCatalog, publicCatalog} from "./catalog.js";
+import {account, hasAccountToken, sessionUser} from "./users.js";
 
 const totalsSql = `
   SELECT b.id,
@@ -26,11 +27,18 @@ export default {
 
     try {
       if (path === "/catalog") return await publicCatalog(request, env, respond);
+      if (path.startsWith("/account/")) return await account(request, env, respond, path);
       if (path.startsWith("/admin/")) return await adminCatalog(request, env, respond, path);
       if (path !== "/votes") return respond({error: "Not found"}, 404);
       const authorization = request.headers.get("Authorization") || "";
-      const voter = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
-      if (voter && !voterPattern.test(voter)) return respond({error: "Invalid voter"}, 400);
+      let voter = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+      if (hasAccountToken(request)) {
+        const user = await sessionUser(request, env);
+        if (!user) return respond({error: "请重新登录"}, 401);
+        voter = "user:" + user.id;
+      } else if (voter && !voterPattern.test(voter)) {
+        return respond({error: "Invalid voter"}, 400);
+      }
       if (request.method === "GET") {
         const rows = await env.DB.prepare(totalsSql + " GROUP BY b.id").bind(voter).all();
         return respond(rows.results);

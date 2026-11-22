@@ -14,6 +14,8 @@
 
 站点由 `docs/` 发布。线上资源通过 [管理后台](https://chenmingyu12345.github.io/github-Atlas/admin/) 维护，`docs/tools.js` 提供初始目录和本地预览数据。后台支持新增、编辑、上下架并查看技能的投票总数。登录密钥存于 Worker 的 `ATLAS_ADMIN_TOKEN` Secret，后台只在当前页面内存中保留输入值。
 
+前台支持昵称、账号和密码注册。登录用户的投票选择按账号跨设备保存，访客投票仍按浏览器记录。后台「用户管理」可搜索注册账号、查看注册和最近登录时间，以及停用或恢复账号。停用会撤销已有登录会话。首次启用账号功能时，在同一 D1 数据库执行 `votes/users.sql`。
+
 首次部署目录时，在同一个 D1 数据库执行 `votes/catalog.sql`，再用 `node votes/seed-catalog.mjs` 生成官网旧目录的初始化 SQL。种子保留原有技能投票和浏览器收藏关联，并跳过已迁移的条目。
 
 默认按 GitHub Star 降序，技能使用所属仓库的 Star，在线工具没有仓库时保留编排顺序。使用 Node.js、Python 3 和已登录的 GitHub CLI 运行 `python scripts/update_web_stars.py` 可刷新内置仓库的 Star 快照。
