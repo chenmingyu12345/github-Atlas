@@ -8,6 +8,18 @@
 
 站点由 `docs/` 发布，条目维护在 `docs/tools.js`。默认按 GitHub Star 降序，技能使用所属仓库的 Star，在线工具没有仓库时保留编排顺序。使用 Node.js、Python 3 和已登录的 GitHub CLI 运行 `python scripts/update_web_stars.py` 可刷新网站的 Star 快照。
 
+### 选题来源
+
+导航网站用于发现候选。图鉴以工具官网、官方仓库或技能目录的原作者条目作为使用入口，并按学习和办公场景撰写中文说明。名单去重后入库，同一技能仓库的不同技能可以分别收录。
+
+| 方向 | 参考目录 |
+| --- | --- |
+| 国内 AI 和办公 | [AI 工具集](https://ai-bot.cn/) · [AI 旗页](https://www.aiqipage.com/) · [时代华商 AI 导航](https://www.zdmba.com.cn/) · [深圳大学图书馆生成式 AI 专题](https://www.lib.szu.edu.cn/learning/ai) |
+| 学术和设计 | [思谋学术](https://ac.scmor.com/) · [优设导航](https://hao.uisdc.com/) · [Product Hunt 效率类](https://www.producthunt.com/categories/productivity) |
+| 在线小工具 | [在线工具 tool.lu](https://tool.lu/) · [爱资料工具](https://www.toolnb.com/) · [LD 工具箱](https://www.lddgo.net/) · [速查在线工具箱](https://www.suchatool.cn/) · [iLovePDF 工具目录](https://www.ilovepdf.com/zh-cn) · [十七连资源网](https://www.17hl.net/) |
+| 开源项目 | [AlternativeTo](https://alternativeto.net/software/notion/) · [Open Source Alternatives](https://opensourcealternative.to/) · [Awesome Selfhosted](https://github.com/awesome-selfhosted/awesome-selfhosted) · [Orbit](https://github.com/DaiYiqq/orbit-github-nav) · [F-Droid](https://f-droid.org/) |
+| AI 技能 | [Skills.sh](https://skills.sh/) |
+
 ## 下载与打开
 
 1. 在 [GitHub Releases](https://github.com/chenmingyu12345/github-Atlas/releases) 下载 `github-Atlas-v0.1.0-portable.zip`。
