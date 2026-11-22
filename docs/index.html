@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="为学生和上班族整理的效率工具导航。按行业、岗位和具体任务找到适合的工具。">
+  <meta name="theme-color" content="#f5f6f8">
+  <title>效率工具图鉴 · GitHub Atlas</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="tools.js" defer></script>
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <header class="top"><div class="wrap top-inner">
+    <a class="brand" href="./"><span class="brand-icon" aria-hidden="true">✳</span> 效率工具图鉴</a>
+    <button class="library" id="saved" type="button" aria-pressed="false"><span aria-hidden="true">☆</span> 我的收藏 <span id="saved-count">0</span></button>
+  </div></header>
+  <main class="wrap">
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-content">
+        <p class="hero-tag">GitHub Atlas · 效率工具导航</p>
+        <h1 id="title">今天，你想完成什么？</h1>
+        <p class="hero-copy">从写论文到做报表，按身份和任务找到用得上的工具。</p>
+        <form class="search" id="search-form" role="search">
+          <label for="query" class="sr-only">搜索工具或任务</label>
+          <span class="search-icon" aria-hidden="true"></span>
+          <input id="query" type="search" placeholder="搜索工具或任务，例如：论文、PDF、录屏" autocomplete="off">
+          <button type="submit">搜索</button>
+        </form>
+      </div>
+      <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit orbit-three"></div><div class="planet">✳</div><i class="satellite s1"></i><i class="satellite s2"></i><i class="satellite s3"></i></div>
+    </section>
+    <div class="workspace">
+      <aside class="sidebar" aria-labelledby="role-heading">
+        <h2 id="role-heading">按身份与行业</h2>
+        <div id="roles" class="roles" role="group" aria-label="身份与行业"></div>
+      </aside>
+      <section class="directory" aria-labelledby="result-title">
+        <div class="section-head">
+          <div><h2 id="result-title">精选工具</h2><p id="role-note"></p></div>
+          <span id="result-count" role="status"></span>
+        </div>
+        <div id="tasks" class="tasks" role="group" aria-label="任务分类"></div>
+        <div id="results" class="cards"></div>
+        <noscript>请启用 JavaScript 后使用搜索和筛选。</noscript>
+      </section>
+    </div>
+  </main>
+  <footer class="wrap footer"><span>效率工具图鉴 · GitHub Atlas</span><div><a href="https://github.com/chenmingyu12345/github-Atlas/issues/new">推荐工具</a><a href="https://github.com/chenmingyu12345/github-Atlas/releases">下载开源项目导航</a></div></footer>
+  <template id="card-template">
+    <article class="card">
+      <div class="card-top"><span class="tool-icon" aria-hidden="true"></span><button class="bookmark" type="button" aria-pressed="false"></button></div>
+      <h3></h3><p class="description"></p>
+      <div class="card-foot"><span class="category"></span><a target="_blank" rel="noopener noreferrer">打开工具</a></div>
+    </article>
+  </template>
+</body>
+</html>

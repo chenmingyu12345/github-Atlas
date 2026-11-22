@@ -2,6 +2,10 @@
 
 按职业发现开源项目。选择行政与人事、财务与会计、教育与培训、内容创作、产品与项目、电商与运营、数据分析或软件开发，查看对应的精选工具。项目默认按 GitHub Star 从高到低排列。
 
+## 在线效率工具图鉴
+
+[打开效率工具图鉴](https://chenmingyu12345.github.io/github-Atlas/)。面向学生和上班族，可按身份、行业和任务查找效率工具，也可以把常用工具收藏在当前浏览器。站点由 `docs/` 发布，工具条目维护在 `docs/tools.js`。
+
 ## 下载与打开
 
 1. 在 [GitHub Releases](https://github.com/chenmingyu12345/github-Atlas/releases) 下载 `github-Atlas-v0.1.0-portable.zip`。
