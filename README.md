@@ -6,6 +6,8 @@
 
 [打开效率工具图鉴](https://chenmingyu12345.github.io/github-Atlas/)。面向国内学生和上班族，可按身份、行业和任务查找在线工具、AI 技能及开源项目，也可以把常用资源收藏在当前浏览器。
 
+需要安装的资源提供「复制安装提示词」。把提示词发给能操作电脑的桌面端智能体，智能体可根据官方来源和当前环境执行安装并验证。技能入口应指向 GitHub 上含有 `SKILL.md` 的具体目录。
+
 站点由 `docs/` 发布，条目维护在 `docs/tools.js`。默认按 GitHub Star 降序，技能使用所属仓库的 Star，在线工具没有仓库时保留编排顺序。使用 Node.js、Python 3 和已登录的 GitHub CLI 运行 `python scripts/update_web_stars.py` 可刷新网站的 Star 快照。
 
 ### 选题来源

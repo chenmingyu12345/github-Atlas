@@ -11,6 +11,16 @@ const storageKey = "atlas.tools.bookmarks";
 const pageSize = 12;
 const kindLabels = { online: "在线工具", skill: "AI 技能", project: "开源项目" };
 const actionLabels = { online: "打开工具", skill: "查看技能", project: "查看项目" };
+const browserProjects = new Set(["Excalidraw", "draw.io", "Squoosh"]);
+const selfHostedProjects = new Set([
+  "AppFlowy", "Appsmith", "Apache Superset", "BookStack", "DataEase",
+  "Dolibarr", "ERPNext", "Memos", "Metabase", "Nextcloud", "Node-RED",
+  "OpenProject", "Paperless-ngx", "Penpot", "Vikunja", "WooCommerce", "Zulip",
+]);
+const developmentTools = new Set([
+  "Apache ECharts", "DuckDB", "FFmpeg", "H5P", "JupyterLab",
+  "PaddleOCR", "Pandoc", "RapidOCR", "Tesseract OCR", "Whisper",
+]);
 const starFormatter = new Intl.NumberFormat("zh-CN");
 const list = resources.map(resource => ({
   ...resource,
@@ -59,13 +69,70 @@ function updateBookmarkButton(button, name) {
   button.setAttribute("aria-label", `收藏 ${name}`);
 }
 
-function createCard({name, task, description, url, kind, repository, stars}) {
+function buildInstallPrompt({name, url, kind, repository}) {
+  if (kind === "online" || browserProjects.has(name)) return "";
+
+  if (kind === "skill") {
+    const [ref, ...directory] = url.split("/tree/")[1].split("/");
+    const skill = directory.at(-1);
+    return [
+      `请在你当前的桌面端智能体中安装「${name}」，技能 ID 为 ${skill}。`,
+      `官方仓库 https://github.com/${repository}，分支 ${ref}，技能目录 ${directory.join("/")}。`,
+      `先核对该目录的 SKILL.md（${url.replace("/tree/", "/blob/")}/SKILL.md）和随附文件。确认当前客户端支持 Agent Skills 后，按客户端官方方式仅安装这一个技能，保留技能所需的脚本和参考资料。`,
+      "检查客户端能否识别该技能，告诉我安装位置和验证结果。如果需要重新加载客户端或补充依赖，说明具体步骤。使用账号、外部服务或权限时，遵循当前客户端的授权流程。",
+    ].join("\n\n");
+  }
+
+  let setup = "先识别电脑的操作系统和架构，从官方入口选择对应的稳定版本并安装。优先使用官方发布包或官方推荐的安装方式，检测到已安装时先检查能否正常打开。";
+  if (selfHostedProjects.has(name)) {
+    setup = "先核对官方的部署文档和电脑现有运行环境。依赖齐全时按官方步骤安装并在本机运行，保留已有数据和配置。使用测试配置验证本机入口，公开访问或连接正式数据时等我明确授权。";
+  }
+  if (developmentTools.has(name)) {
+    setup = "先核对官方安装文档、平台和依赖。按当前环境安装，涉及语言依赖时优先使用项目环境。用版本命令或最小本地示例验证。";
+  }
+  if (name === "OpenCalc") {
+    setup = "先确认你能否操作我已授权的 Android 设备。可以操作时，根据官方发布说明安装对应版本并试用计算功能。仅能操作电脑时，告诉我需要在哪台设备上完成哪一步。";
+  }
+  return [
+    `请帮我安装并验证「${name}」。官方入口 ${url}${repository ? `，官方仓库 https://github.com/${repository}` : ""}。`,
+    setup,
+    "完成后告诉我安装版本、打开方式和验证结果。如果当前权限或设备无法完成，说明卡在哪一步。",
+  ].join("\n\n");
+}
+
+function addInstallPrompt(card, resource) {
+  const prompt = buildInstallPrompt(resource);
+  if (!prompt) return;
+  const install = card.querySelector(".install");
+  const button = install.querySelector(".copy-install");
+  const status = install.querySelector(".copy-status");
+  const details = install.querySelector("details");
+  const field = install.querySelector("textarea");
+  install.hidden = false;
+  field.value = prompt;
+  button.setAttribute("aria-label", `复制「${resource.name}」的安装提示词`);
+  button.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(prompt);
+      status.textContent = "已复制";
+    } catch {
+      details.open = true;
+      field.focus();
+      field.select();
+      status.textContent = "已选中，请手动复制";
+    }
+  });
+}
+
+function createCard(resource) {
+  const {name, task, description, url, kind, repository, stars} = resource;
   const card = byId("card-template").content.cloneNode(true);
   const type = card.querySelector(".tool-type");
   type.querySelector("img").src = `assets/${kind}.webp`;
   type.querySelector("span").textContent = kindLabels[kind];
   card.querySelector("h3").textContent = name;
   card.querySelector(".description").textContent = description;
+  addInstallPrompt(card, resource);
   card.querySelector(".category").textContent = tasks[task];
   const starLabel = card.querySelector(".stars");
   starLabel.hidden = stars === null;
@@ -136,7 +203,7 @@ function render(reset = true) {
   byId("result-title").textContent = bookmarksOnly ? "我的收藏"
     : [currentRole === "all" ? "" : role[0], kindLabels[currentKind]].filter(Boolean).join(" · ") || "全部资源";
   byId("role-note").textContent = bookmarksOnly ? "收藏保存在当前浏览器。"
-    : currentKind === "skill" ? "技能需在兼容的 AI 助手中使用，安装方式见作者文档。" : role[1];
+    : currentKind === "skill" ? "复制卡片里的安装提示词，发给支持技能的桌面端智能体。" : role[1];
   byId("result-count").textContent = `${matching.length} 项`;
   sort.disabled = currentKind === "online";
   const starNote = byId("star-note");
