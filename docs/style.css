@@ -134,6 +134,13 @@ h1 { font-size: clamp(2rem, 4.5vw, 3.35rem); line-height: 1.12; letter-spacing: 
 .skill-sources li a { display: inline-block; font-weight: 600; }
 .skill-vote { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 10px; padding: 5px 9px; margin-top: 9px; border-radius: 7px; background: #f0f6f2; color: var(--muted); font-size: .86rem; }
 .skill-vote .vote-link { white-space: nowrap; }
+.vote-actions { display: flex; gap: 5px; }
+.vote-actions button { min-width: 38px; min-height: 34px; padding: 3px 6px; border: 1px solid #d6e5dc; border-radius: 6px; background: #fff; color: var(--ink); font-size: .83rem; font-variant-numeric: tabular-nums; }
+.vote-actions button[aria-pressed=true] { border-color: #87b39f; background: #dff2e6; }
+.vote-actions button:not(:disabled):hover { border-color: #79a994; }
+.vote-actions button:disabled { cursor: default; }
+.vote-status { font-size: .8rem; }
+.vote-status:empty { display: none; }
 .more { display: block; margin: 18px auto 0; background: white; color: var(--accent); border: 1px solid #cbd9d3; padding: 10px 18px; border-radius: 8px; }
 @media (max-width: 640px) {
   .type-nav { gap: 7px; }

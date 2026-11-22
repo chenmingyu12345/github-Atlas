@@ -1,0 +1,13 @@
+{
+  "name": "github-atlas-votes",
+  "main": "worker.js",
+  "compatibility_date": "2025-01-01",
+  "vars": { "ATLAS_ORIGIN": "https://chenmingyu12345.github.io" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "github-atlas-votes",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+    }
+  ]
+}

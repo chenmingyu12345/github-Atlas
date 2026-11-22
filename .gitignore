@@ -1,3 +1,5 @@
 dist/
 qa/
 __pycache__/
+.wrangler/
+/votes/wrangler.jsonc

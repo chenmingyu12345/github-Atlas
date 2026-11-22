@@ -11,6 +11,8 @@ const storageKey = "atlas.tools.bookmarks";
 const pageSize = 12;
 const ballotRepository = "chenmingyu12345/github-Atlas";
 const ballotNumbers = typeof skillBallots === "undefined" ? {} : skillBallots;
+const voteEndpoint = typeof atlasVoteEndpoint === "string" ? atlasVoteEndpoint : "";
+const voterStorageKey = "atlas.vote.identity";
 const kindLabels = { online: "在线工具", skill: "AI 技能", project: "开源项目" };
 const actionLabels = { online: "打开工具", skill: "查看技能", project: "查看项目" };
 const skillCollections = new Set([
@@ -48,6 +50,15 @@ let bookmarksOnly = false;
 let visibleCount = pageSize;
 let voteCounts;
 let voteRequest;
+let voter;
+const pendingVotes = new Set();
+const voteMessages = new Map();
+if (voteEndpoint) {
+  try {
+    voter = localStorage.getItem(voterStorageKey) || crypto.randomUUID();
+    localStorage.setItem(voterStorageKey, voter);
+  } catch { voter = undefined; }
+}
 
 function makeFilter(container, key, label, icon) {
   const button = document.createElement("button");
@@ -162,34 +173,79 @@ function addSkillFeedback(card, resource) {
   section.dataset.ballot = ballot;
   const link = section.querySelector(".vote-link");
   link.href = `https://github.com/${ballotRepository}/issues/${ballot}`;
+  link.hidden = Boolean(voteEndpoint);
   link.setAttribute("aria-label", `在 GitHub 给「${resource.name}」投推荐或不推荐票`);
+  for (const button of section.querySelectorAll("[data-choice]")) {
+    const choice = Number(button.dataset.choice);
+    button.setAttribute("aria-label", `${choice === 1 ? "推荐" : "不推荐"}「${resource.name}」`);
+    button.addEventListener("click", () => castVote(ballot, choice));
+  }
 }
 
 function showVoteCounts() {
   for (const section of results.querySelectorAll("[data-ballot]")) {
-    const counts = voteCounts?.get(Number(section.dataset.ballot));
-    const label = section.querySelector(".vote-count");
-    label.textContent = counts ? `推荐 ${counts["+1"]} · 不推荐 ${counts["-1"]}`
-      : voteCounts === undefined ? "正在读取票数" : "票数暂不可用";
+    const ballot = Number(section.dataset.ballot);
+    const counts = voteCounts?.get(ballot);
+    for (const button of section.querySelectorAll("[data-choice]")) {
+      const choice = Number(button.dataset.choice);
+      const total = choice === 1 ? counts?.recommend : counts?.notRecommend;
+      button.querySelector(".vote-total").textContent = total === undefined ? "–" : starFormatter.format(total);
+      button.setAttribute("aria-pressed", counts?.choice === choice);
+      button.disabled = !voter || pendingVotes.has(ballot) || voteCounts === undefined;
+    }
+    section.querySelector(".vote-status").textContent = voteMessages.get(ballot)
+      || (voteEndpoint && !voter ? "请允许浏览器保存投票选择" : "")
+      || (counts ? "" : voteCounts === undefined ? "正在读取票数" : "票数暂不可用");
   }
 }
 
 async function refreshVoteCounts() {
-  if (voteRequest || !results.querySelector("[data-ballot]")) return;
-  const url = `https://api.github.com/repos/${ballotRepository}/issues?labels=skill-vote&state=all&per_page=100`;
-  voteRequest = fetch(url, {signal: AbortSignal.timeout(5000)})
+  if (voteRequest || pendingVotes.size || !results.querySelector("[data-ballot]")) return;
+  const url = voteEndpoint || `https://api.github.com/repos/${ballotRepository}/issues?labels=skill-vote&state=all&per_page=100`;
+  const headers = voter ? {Authorization: `Bearer ${voter}`} : {};
+  voteRequest = fetch(url, {headers, signal: AbortSignal.timeout(5000)})
     .then(response => {
       if (!response.ok) throw new Error("Cannot load GitHub votes");
       return response.json();
     })
-    .then(issues => {
-      voteCounts = new Map(issues.filter(issue => issue.reactions).map(issue => [issue.number, issue.reactions]));
+    .then(rows => {
+      voteCounts = new Map(voteEndpoint ? rows.map(row => [row.id, row])
+        : rows.filter(row => row.reactions).map(row => [
+            row.number, {recommend: row.reactions["+1"], notRecommend: row.reactions["-1"]},
+          ]));
     })
     .catch(() => { voteCounts ??= new Map(); })
     .finally(() => {
       voteRequest = undefined;
       showVoteCounts();
     });
+}
+
+async function castVote(id, choice) {
+  if (!voteEndpoint || !voter || pendingVotes.has(id) || voteCounts?.get(id)?.choice === choice) return;
+  // Wait for an in-flight refresh before sending a new choice.
+  pendingVotes.add(id);
+  voteMessages.delete(id);
+  showVoteCounts();
+  try {
+    if (voteRequest) await voteRequest;
+    const response = await fetch(voteEndpoint, {
+      method: "PUT",
+      headers: {Authorization: `Bearer ${voter}`, "Content-Type": "application/json"},
+      body: JSON.stringify({id, choice}),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) throw new Error("Vote was not confirmed");
+    const updated = await response.json();
+    voteCounts ??= new Map();
+    voteCounts.set(id, updated);
+    voteMessages.set(id, "已记票");
+  } catch {
+    voteMessages.set(id, "未确认，请重试");
+  } finally {
+    pendingVotes.delete(id);
+    showVoteCounts();
+  }
 }
 
 function createCard(resource) {
