@@ -1,0 +1,21 @@
+const skillBallots = {
+  "https://github.com/hugohe3/ppt-master/tree/main/skills/ppt-master": 1,
+  "https://github.com/iOfficeAI/OfficeCLI/tree/main/skills/officecli-xlsx": 2,
+  "https://github.com/iOfficeAI/OfficeCLI/tree/main/skills/officecli-docx": 3,
+  "https://github.com/anthropics/skills/tree/main/skills/pdf": 4,
+  "https://github.com/anthropics/skills/tree/main/skills/doc-coauthoring": 5,
+  "https://github.com/anthropics/skills/tree/main/skills/canvas-design": 6,
+  "https://github.com/openai/skills/tree/main/skills/.curated/transcribe": 7,
+  "https://github.com/openai/skills/tree/main/skills/.curated/jupyter-notebook": 8,
+  "https://github.com/openai/skills/tree/main/skills/.curated/notion-meeting-intelligence": 9,
+  "https://github.com/vercel-labs/skills/tree/main/skills/find-skills": 10,
+  "https://github.com/mattpocock/skills/tree/main/skills/productivity/grill-me": 11,
+  "https://github.com/mattpocock/skills/tree/main/skills/engineering/prototype": 12,
+  "https://github.com/heygen-com/hyperframes/tree/main/skills/hyperframes": 13,
+  "https://github.com/remotion-dev/skills/tree/main/skills/remotion-best-practices": 14,
+  "https://github.com/Agentchengfeng/chengfeng-videocut-skills/tree/main/plugins/chengfeng-videocut/skills/chengfeng-videocut-workbench": 15,
+  "https://github.com/anthropics/skills/tree/main/skills/frontend-design": 16,
+  "https://github.com/anthropics/skills/tree/main/skills/internal-comms": 17,
+  "https://github.com/openai/skills/tree/main/skills/.curated/notion-knowledge-capture": 18,
+  "https://github.com/openai/skills/tree/main/skills/.curated/notion-research-documentation": 19
+};

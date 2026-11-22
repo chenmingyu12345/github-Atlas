@@ -9,6 +9,8 @@ const results = byId("results");
 const more = byId("more");
 const storageKey = "atlas.tools.bookmarks";
 const pageSize = 12;
+const ballotRepository = "chenmingyu12345/github-Atlas";
+const ballotNumbers = typeof skillBallots === "undefined" ? {} : skillBallots;
 const kindLabels = { online: "在线工具", skill: "AI 技能", project: "开源项目" };
 const actionLabels = { online: "打开工具", skill: "查看技能", project: "查看项目" };
 const skillCollections = new Set([
@@ -44,6 +46,8 @@ let currentTask = "all";
 let currentKind = "";
 let bookmarksOnly = false;
 let visibleCount = pageSize;
+let voteCounts;
+let voteRequest;
 
 function makeFilter(container, key, label, icon) {
   const button = document.createElement("button");
@@ -80,13 +84,17 @@ function buildInstallPrompt({name, url, kind, repository}) {
   if (kind === "skill") {
     const [ref, ...directory] = url.split("/tree/")[1].split("/");
     const skill = directory.at(-1);
-    const dependency = repository === "iOfficeAI/OfficeCLI"
-      ? "按项目中文文档检查并安装 OfficeCLI 命令行，验证 officecli 可用后再验证技能。"
-      : "";
+    const dependency = {
+      "iOfficeAI/OfficeCLI": "按项目中文文档检查并安装 OfficeCLI 命令行，验证 officecli 可用后再验证技能。",
+      "Agentchengfeng/chengfeng-videocut-skills": "此工作台会调用同一套件的剪辑和导出子技能。按官方 README 安装 videocut 套件到当前客户端，保留同一版本的套件依赖。",
+    }[repository];
+    const installation = repository === "Agentchengfeng/chengfeng-videocut-skills"
+      ? "根据官方 README 选择适配当前客户端的套件安装方式。"
+      : "按客户端官方方式仅安装这一项，保留技能所需的脚本和参考资料。";
     return [
       `请在你当前的桌面端智能体中安装「${name}」，技能 ID 为 ${skill}。`,
       `官方仓库 https://github.com/${repository}，分支 ${ref}，技能目录 ${directory.join("/")}。`,
-      `先核对该目录的 SKILL.md（${url.replace("/tree/", "/blob/")}/SKILL.md）和随附文件。确认当前客户端支持 Agent Skills 后，按客户端官方方式仅安装这一个技能，保留技能所需的脚本和参考资料。`,
+      `先核对该目录的 SKILL.md（${url.replace("/tree/", "/blob/")}/SKILL.md）和随附文件。确认当前客户端支持 Agent Skills 后，${installation}`,
       dependency,
       "检查客户端能否识别该技能，告诉我安装位置和验证结果。如果需要重新加载客户端或补充依赖，说明具体步骤。使用账号、外部服务或权限时，遵循当前客户端的授权流程。",
     ].filter(Boolean).join("\n\n");
@@ -131,6 +139,59 @@ function addInstallPrompt(card, resource) {
   });
 }
 
+function addSkillFeedback(card, resource) {
+  const sources = skillSources[resource.name];
+  if (sources) {
+    const sourceSection = card.querySelector(".skill-sources");
+    sourceSection.hidden = false;
+    for (const [label, url] of sources) {
+      const item = document.createElement("li");
+      const link = document.createElement("a");
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = label;
+      item.append(link);
+      sourceSection.querySelector("ul").append(item);
+    }
+  }
+  const ballot = ballotNumbers[resource.url];
+  if (!ballot) return;
+  const section = card.querySelector(".skill-vote");
+  section.hidden = false;
+  section.dataset.ballot = ballot;
+  const link = section.querySelector(".vote-link");
+  link.href = `https://github.com/${ballotRepository}/issues/${ballot}`;
+  link.setAttribute("aria-label", `在 GitHub 给「${resource.name}」投推荐或不推荐票`);
+}
+
+function showVoteCounts() {
+  for (const section of results.querySelectorAll("[data-ballot]")) {
+    const counts = voteCounts?.get(Number(section.dataset.ballot));
+    const label = section.querySelector(".vote-count");
+    label.textContent = counts ? `推荐 ${counts["+1"]} · 不推荐 ${counts["-1"]}`
+      : voteCounts === undefined ? "正在读取票数" : "票数暂不可用";
+  }
+}
+
+async function refreshVoteCounts() {
+  if (voteRequest || !results.querySelector("[data-ballot]")) return;
+  const url = `https://api.github.com/repos/${ballotRepository}/issues?labels=skill-vote&state=all&per_page=100`;
+  voteRequest = fetch(url, {signal: AbortSignal.timeout(5000)})
+    .then(response => {
+      if (!response.ok) throw new Error("Cannot load GitHub votes");
+      return response.json();
+    })
+    .then(issues => {
+      voteCounts = new Map(issues.filter(issue => issue.reactions).map(issue => [issue.number, issue.reactions]));
+    })
+    .catch(() => { voteCounts ??= new Map(); })
+    .finally(() => {
+      voteRequest = undefined;
+      showVoteCounts();
+    });
+}
+
 function createCard(resource) {
   const {name, task, description, url, kind, repository, stars} = resource;
   const card = byId("card-template").content.cloneNode(true);
@@ -140,6 +201,7 @@ function createCard(resource) {
   card.querySelector("h3").textContent = name;
   card.querySelector(".description").textContent = description;
   addInstallPrompt(card, resource);
+  if (kind === "skill") addSkillFeedback(card, resource);
   card.querySelector(".category").textContent = tasks[task];
   const starLabel = card.querySelector(".stars");
   starLabel.hidden = stars === null;
@@ -218,6 +280,8 @@ function render(reset = true) {
   starNote.hidden = sort.disabled;
   starNote.textContent = `GitHub Star 快照 ${starSnapshot.date} · 技能显示所属仓库 Star`;
   results.replaceChildren(...matching.slice(0, visibleCount).map(createCard));
+  showVoteCounts();
+  if (voteCounts === undefined) refreshVoteCounts();
   more.hidden = matching.length <= visibleCount;
   if (matching.length === 0) {
     const empty = document.createElement("p");
@@ -260,6 +324,9 @@ savedButton.addEventListener("click", () => {
   if (bookmarksOnly) byId("result-title").scrollIntoView({block: "nearest"});
 });
 search.addEventListener("input", () => render());
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) refreshVoteCounts();
+});
 sort.addEventListener("change", () => render());
 more.addEventListener("click", () => {
   const firstNew = visibleCount;

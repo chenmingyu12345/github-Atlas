@@ -8,6 +8,8 @@
 
 需要安装的资源提供「复制安装提示词」。把提示词发给能操作电脑的桌面端智能体，智能体可根据官方来源和当前环境执行安装并验证。技能入口应指向 GitHub 上含有 `SKILL.md` 的具体目录。
 
+部分技能附有作者演示、社区实测或中文教程。每个技能的推荐与不推荐票来自图鉴仓库对应 GitHub Issue 的 👍 和 👎。访客可以在图鉴看票数，投票时需要登录 GitHub 并在投票页选择反馈。新增技能后可用已登录的 GitHub CLI 运行 `python scripts/sync_skill_ballots.py` 创建或复用投票页。
+
 站点由 `docs/` 发布，条目维护在 `docs/tools.js`。默认按 GitHub Star 降序，技能使用所属仓库的 Star，在线工具没有仓库时保留编排顺序。使用 Node.js、Python 3 和已登录的 GitHub CLI 运行 `python scripts/update_web_stars.py` 可刷新网站的 Star 快照。
 
 ### 选题来源
