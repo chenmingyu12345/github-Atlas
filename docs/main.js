@@ -11,6 +11,9 @@ const storageKey = "atlas.tools.bookmarks";
 const pageSize = 12;
 const kindLabels = { online: "在线工具", skill: "AI 技能", project: "开源项目" };
 const actionLabels = { online: "打开工具", skill: "查看技能", project: "查看项目" };
+const skillCollections = new Set([
+  "anthropics/skills", "openai/skills", "vercel-labs/skills", "mattpocock/skills", "remotion-dev/skills",
+]);
 const browserProjects = new Set(["Excalidraw", "draw.io", "Squoosh"]);
 const selfHostedProjects = new Set([
   "AppFlowy", "Appsmith", "Apache Superset", "BookStack", "DataEase",
@@ -32,7 +35,9 @@ const list = resources.map(resource => ({
 let bookmarks = new Set();
 try {
   const stored = JSON.parse(localStorage.getItem(storageKey));
-  if (Array.isArray(stored)) bookmarks = new Set(stored);
+  if (Array.isArray(stored)) {
+    bookmarks = new Set(stored.map(name => name === "PPT 演示技能" ? "PPT Master" : name));
+  }
 } catch {}
 let currentRole = "all";
 let currentTask = "all";
@@ -75,12 +80,16 @@ function buildInstallPrompt({name, url, kind, repository}) {
   if (kind === "skill") {
     const [ref, ...directory] = url.split("/tree/")[1].split("/");
     const skill = directory.at(-1);
+    const dependency = repository === "iOfficeAI/OfficeCLI"
+      ? "按项目中文文档检查并安装 OfficeCLI 命令行，验证 officecli 可用后再验证技能。"
+      : "";
     return [
       `请在你当前的桌面端智能体中安装「${name}」，技能 ID 为 ${skill}。`,
       `官方仓库 https://github.com/${repository}，分支 ${ref}，技能目录 ${directory.join("/")}。`,
       `先核对该目录的 SKILL.md（${url.replace("/tree/", "/blob/")}/SKILL.md）和随附文件。确认当前客户端支持 Agent Skills 后，按客户端官方方式仅安装这一个技能，保留技能所需的脚本和参考资料。`,
+      dependency,
       "检查客户端能否识别该技能，告诉我安装位置和验证结果。如果需要重新加载客户端或补充依赖，说明具体步骤。使用账号、外部服务或权限时，遵循当前客户端的授权流程。",
-    ].join("\n\n");
+    ].filter(Boolean).join("\n\n");
   }
 
   let setup = "先识别电脑的操作系统和架构，从官方入口选择对应的稳定版本并安装。优先使用官方发布包或官方推荐的安装方式，检测到已安装时先检查能否正常打开。";
@@ -136,7 +145,8 @@ function createCard(resource) {
   starLabel.hidden = stars === null;
   if (stars !== null) {
     starLabel.dataset.value = stars;
-    starLabel.textContent = `${kind === "skill" ? "仓库 " : ""}★ ${starFormatter.format(stars)}`;
+    const starSource = kind === "skill" ? (skillCollections.has(repository) ? "合集仓库 " : "项目仓库 ") : "";
+    starLabel.textContent = `${starSource}★ ${starFormatter.format(stars)}`;
     starLabel.title = `${repository} · GitHub Star`;
   }
   const entry = card.querySelector(".entry-link");
