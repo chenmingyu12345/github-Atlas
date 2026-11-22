@@ -106,7 +106,6 @@ function addInstallPrompt(card, resource) {
   const install = card.querySelector(".install");
   const button = install.querySelector(".copy-install");
   const status = install.querySelector(".copy-status");
-  const details = install.querySelector("details");
   const field = install.querySelector("textarea");
   install.hidden = false;
   field.value = prompt;
@@ -116,7 +115,6 @@ function addInstallPrompt(card, resource) {
       await navigator.clipboard.writeText(prompt);
       status.textContent = "已复制";
     } catch {
-      details.open = true;
       field.focus();
       field.select();
       status.textContent = "已选中，请手动复制";

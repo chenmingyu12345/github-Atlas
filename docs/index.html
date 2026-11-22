@@ -6,11 +6,11 @@
   <meta name="description" content="为学生和上班族整理的效率工具导航。按行业、岗位和具体任务找到适合的工具。">
   <meta name="theme-color" content="#f5f7f6">
   <title>效率工具图鉴 · GitHub Atlas</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=install-inline">
   <link rel="icon" href="assets/online.webp" type="image/webp">
   <script src="tools.js" defer></script>
   <script src="stars.js" defer></script>
-  <script src="main.js" defer></script>
+  <script src="main.js?v=install-inline" defer></script>
 </head>
 <body>
   <header class="top"><div class="wrap top-inner">
@@ -63,13 +63,10 @@
       <div class="card-top"><span class="tool-type"><img alt="" width="31" height="31"><span></span></span><button class="bookmark" type="button" aria-pressed="false"></button></div>
       <h3></h3><p class="description"></p>
       <div class="install" hidden>
+        <p class="install-label">发给桌面端智能体</p>
         <button class="copy-install" type="button">复制安装提示词</button>
         <span class="copy-status" role="status"></span>
-        <details>
-          <summary>查看提示词</summary>
-          <p>复制后发给能操作电脑的桌面端智能体。</p>
-          <textarea aria-label="安装提示词" readonly rows="5"></textarea>
-        </details>
+        <textarea aria-label="安装提示词" readonly rows="6"></textarea>
       </div>
       <div class="card-foot"><span class="category"></span><span class="stars"></span></div>
       <div class="card-links"><a class="entry-link" target="_blank" rel="noopener noreferrer"></a><a class="repository-link" target="_blank" rel="noopener noreferrer">GitHub</a></div>
