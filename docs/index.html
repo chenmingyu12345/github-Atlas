@@ -4,23 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="为学生和上班族整理的效率工具导航。按行业、岗位和具体任务找到适合的工具。">
-  <meta name="theme-color" content="#f5f6f8">
+  <meta name="theme-color" content="#f5f7f6">
   <title>效率工具图鉴 · GitHub Atlas</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="assets/online.webp" type="image/webp">
   <script src="tools.js" defer></script>
+  <script src="stars.js" defer></script>
   <script src="main.js" defer></script>
 </head>
 <body>
   <header class="top"><div class="wrap top-inner">
-    <a class="brand" href="./"><span class="brand-icon" aria-hidden="true">✳</span> 效率工具图鉴</a>
+    <a class="brand" href="./"><img class="brand-icon" src="assets/online.webp" alt="" width="38" height="38">效率工具图鉴</a>
     <button class="library" id="saved" type="button" aria-pressed="false"><span aria-hidden="true">☆</span> 我的收藏 <span id="saved-count">0</span></button>
   </div></header>
   <main class="wrap">
     <section class="hero" aria-labelledby="title">
       <div class="hero-content">
-        <p class="hero-tag">GitHub Atlas · 效率工具导航</p>
         <h1 id="title">今天，你想完成什么？</h1>
-        <p class="hero-copy">从写论文到做报表，按身份和任务找到用得上的工具。</p>
+        <p class="hero-copy">从写论文到做报表，找到顺手的在线工具、AI 技能和开源软件。</p>
         <form class="search" id="search-form" role="search">
           <label for="query" class="sr-only">搜索工具或任务</label>
           <span class="search-icon" aria-hidden="true"></span>
@@ -28,8 +29,12 @@
           <button type="submit">搜索</button>
         </form>
       </div>
-      <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit orbit-three"></div><div class="planet">✳</div><i class="satellite s1"></i><i class="satellite s2"></i><i class="satellite s3"></i></div>
     </section>
+    <nav class="type-nav" aria-label="资源类型" id="types">
+      <button type="button" data-type="online" aria-pressed="false"><img src="assets/online.webp" width="50" height="50" alt=""><span><strong>在线工具</strong><small>文档协作、翻译与制图</small></span></button>
+      <button type="button" data-type="skill" aria-pressed="false"><img src="assets/skill.webp" width="50" height="50" alt=""><span><strong>AI 技能</strong><small>给 AI 助手添加工作能力</small></span></button>
+      <button type="button" data-type="project" aria-pressed="false"><img src="assets/project.webp" width="50" height="50" alt=""><span><strong>开源项目</strong><small>桌面软件与可部署工具</small></span></button>
+    </nav>
     <div class="workspace">
       <aside class="sidebar" aria-labelledby="role-heading">
         <h2 id="role-heading">按身份与行业</h2>
@@ -38,10 +43,16 @@
       <section class="directory" aria-labelledby="result-title">
         <div class="section-head">
           <div><h2 id="result-title">精选工具</h2><p id="role-note"></p></div>
-          <span id="result-count" role="status"></span>
+          <div class="result-controls">
+            <span id="result-count" role="status"></span>
+            <label class="sr-only" for="sort">排序方式</label>
+            <select id="sort"><option value="stars">Star 从高到低</option><option value="recommended">推荐顺序</option></select>
+          </div>
         </div>
+        <p class="star-note" id="star-note"></p>
         <div id="tasks" class="tasks" role="group" aria-label="任务分类"></div>
         <div id="results" class="cards"></div>
+        <button class="more" id="more" type="button" hidden>显示更多</button>
         <noscript>请启用 JavaScript 后使用搜索和筛选。</noscript>
       </section>
     </div>
@@ -49,9 +60,10 @@
   <footer class="wrap footer"><span>效率工具图鉴 · GitHub Atlas</span><div><a href="https://github.com/chenmingyu12345/github-Atlas/issues/new">推荐工具</a><a href="https://github.com/chenmingyu12345/github-Atlas/releases">下载开源项目导航</a></div></footer>
   <template id="card-template">
     <article class="card">
-      <div class="card-top"><span class="tool-icon" aria-hidden="true"></span><button class="bookmark" type="button" aria-pressed="false"></button></div>
+      <div class="card-top"><span class="tool-type"><img alt="" width="31" height="31"><span></span></span><button class="bookmark" type="button" aria-pressed="false"></button></div>
       <h3></h3><p class="description"></p>
-      <div class="card-foot"><span class="category"></span><a target="_blank" rel="noopener noreferrer">打开工具</a></div>
+      <div class="card-foot"><span class="category"></span><span class="stars"></span></div>
+      <div class="card-links"><a class="entry-link" target="_blank" rel="noopener noreferrer"></a><a class="repository-link" target="_blank" rel="noopener noreferrer">GitHub</a></div>
     </article>
   </template>
 </body>

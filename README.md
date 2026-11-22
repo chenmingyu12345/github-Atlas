@@ -4,7 +4,9 @@
 
 ## 在线效率工具图鉴
 
-[打开效率工具图鉴](https://chenmingyu12345.github.io/github-Atlas/)。面向学生和上班族，可按身份、行业和任务查找效率工具，也可以把常用工具收藏在当前浏览器。站点由 `docs/` 发布，工具条目维护在 `docs/tools.js`。
+[打开效率工具图鉴](https://chenmingyu12345.github.io/github-Atlas/)。面向国内学生和上班族，可按身份、行业和任务查找在线工具、AI 技能及开源项目，也可以把常用资源收藏在当前浏览器。
+
+站点由 `docs/` 发布，条目维护在 `docs/tools.js`。默认按 GitHub Star 降序，技能使用所属仓库的 Star，在线工具没有仓库时保留编排顺序。使用 Node.js、Python 3 和已登录的 GitHub CLI 运行 `python scripts/update_web_stars.py` 可刷新网站的 Star 快照。
 
 ## 下载与打开
 

@@ -57,3 +57,60 @@ const tools = [
   ["H5P", "design", ["education"], "制作互动视频、选择题和可嵌入课程的互动练习。", "https://h5p.org/", "课件 练习 教案 题库"],
   ["Vikunja", "manage", ["student","office","operations","project"], "用列表或看板管理待办，跟踪团队任务与截止日期。", "https://vikunja.io/", "任务看板 清单 协作"],
 ];
+
+// 原有条目保留名称作为收藏键，GitHub 仓库地址独立于使用入口。
+const repositories = {
+  "Zotero":"zotero/zotero", "Stirling PDF":"Stirling-Tools/Stirling-PDF",
+  "Excalidraw":"excalidraw/excalidraw", "Umi-OCR":"hiroi-sora/Umi-OCR",
+  "LocalSend":"localsend/localsend", "OBS Studio":"obsproject/obs-studio",
+  "Anki":"ankitects/anki", "Joplin":"laurent22/joplin",
+  "draw.io":"jgraph/drawio", "LibreOffice":"LibreOffice/core",
+  "OpenRefine":"OpenRefine/OpenRefine", "NAPS2":"cyanfish/naps2",
+  "Super Productivity":"super-productivity/super-productivity", "ShareX":"ShareX/ShareX",
+  "GIMP":"GNOME/gimp", "Krita":"KDE/krita",
+  "Audacity":"audacity/audacity", "Kdenlive":"KDE/kdenlive",
+  "HandBrake":"HandBrake/HandBrake", "Squoosh":"GoogleChromeLabs/squoosh", "7-Zip":"ip7z/7zip",
+  "Pandoc":"jgm/pandoc", "JASP":"jasp-stats/jasp-desktop",
+  "Metabase":"metabase/metabase", "DBeaver Community":"dbeaver/dbeaver",
+  "JupyterLab":"jupyterlab/jupyterlab", "OpenProject":"opf/openproject",
+  "Penpot":"penpot/penpot", "GnuCash":"Gnucash/gnucash",
+  "Paperless-ngx":"paperless-ngx/paperless-ngx", "H5P":"h5p/h5p-php-library",
+  "Vikunja":"go-vikunja/vikunja",
+};
+
+const addedResources = [
+  ["飞书文档","reading",["student","office","education","project","operations"],"多人一起写文档、改方案和记会议纪要，支持评论和共享。","https://docs.feishu.cn/","多维表格 协作 作业 知识库","online"],
+  ["腾讯文档","data",["student","office","education","finance","operations"],"在线编辑表格、收集报名信息和共享小组作业。","https://docs.qq.com/","表单 微信 QQ Excel","online"],
+  ["金山文档","reading",["student","office","education","finance","operations"],"在浏览器编辑和共享 Word、Excel、PPT 类文件。","https://www.kdocs.cn/","WPS 协作 Excel 文档","online"],
+  ["语雀","reading",["student","office","education","project","data"],"用知识库整理课程笔记、团队手册和项目资料。","https://www.yuque.com/","笔记 知识库 学习","online"],
+  ["ProcessOn","design",["student","office","education","project","data"],"画思维导图、流程图和组织结构图，可邀请同事一起编辑。","https://www.processon.com/","脑图 架构 流程","online"],
+  ["腾讯问卷","data",["student","education","operations","project"],"创建调研或满意度问卷，回收答案并查看统计。","https://wj.qq.com/","调查 问卷 数据收集","online"],
+  ["讯飞听见","media",["student","office","education","creative","project"],"把采访、课程或会议的音频转成文字，便于整理纪要。","https://www.iflyrec.com/","录音 转写 会议纪要 字幕","online"],
+  ["稿定设计","design",["creative","operations","education"],"用在线模板制作封面、海报和电商活动素材。","https://www.gaoding.com/","电商 商品图 封面 海报","online"],
+  ["有道翻译","reading",["student","office","education","creative","data"],"查单词或翻译段落，辅助阅读英文资料和准备双语文本。","https://fanyi.youdao.com/","翻译 英语 文献 词典","online"],
+  ["国家智慧教育公共服务平台","reading",["student","education"],"从国内公共教育平台查找课程、教材和教学资源。","https://www.smartedu.cn/","学习 备课 网课","online"],
+  ["思源笔记","reading",["student","office","education","project"],"把笔记组织成双向链接的知识库，支持本地使用。","https://b3log.org/siyuan/","知识管理 双链 中文","project","siyuan-note/siyuan"],
+  ["MarkText","reading",["student","office","creative","data"],"在桌面编辑 Markdown，边写边看排版效果。","https://github.com/marktext/marktext","笔记 写作 Markdown","project","marktext/marktext"],
+  ["Cherry Studio","reading",["student","office","education","creative","data"],"在桌面端集中管理不同 AI 模型的对话和知识库，需要配置模型服务。","https://github.com/CherryHQ/cherry-studio","中文 AI 对话 知识库","project","CherryHQ/cherry-studio"],
+  ["BiliLiveRecorder","media",["creative","operations"],"录制哔哩哔哩直播，方便归档自有节目素材。","https://github.com/BililiveRecorder/BililiveRecorder","B站 直播 录制 中文","project","BililiveRecorder/BililiveRecorder"],
+  ["RapidOCR","pdf",["office","finance","education","data"],"在本地程序中识别截图和扫描件里的中文文字。","https://github.com/RapidAI/RapidOCR","OCR 中文截图 批量识别","project","RapidAI/RapidOCR"],
+  ["Node-RED","manage",["operations","project","data"],"通过连线搭建工作流，把数据处理、通知等步骤串在一起。","https://nodered.org/","工作流 自动化 低代码","project","node-red/node-red"],
+  ["DataEase","data",["finance","operations","data","project"],"连接数据源制作可视化报表和业务看板。","https://github.com/dataease/dataease","BI 中文 数据可视化 仪表盘","project","dataease/dataease"],
+  ["Excel 表格技能","data",["student","office","education","finance","operations","data"],"让支持 Agent Skills 的助手创建、分析和编辑 Excel 表格。","https://github.com/anthropics/skills/tree/main/skills/xlsx","xlsx Excel 报表 台账","skill","anthropics/skills"],
+  ["Word 文档技能","reading",["student","office","education","finance","project"],"用 AI 助手起草 Word 文档，并处理标题、表格和文档排版。","https://github.com/anthropics/skills/tree/main/skills/docx","docx 报告 作业 论文","skill","anthropics/skills"],
+  ["PPT 演示技能","design",["student","office","education","creative","project","operations"],"用 AI 助手创建或修改演示文稿，适合课程汇报和方案展示。","https://github.com/anthropics/skills/tree/main/skills/pptx","PPT PowerPoint 汇报 幻灯片","skill","anthropics/skills"],
+  ["PDF 处理技能","pdf",["student","office","finance","education"],"用 AI 助手提取 PDF 内容、处理页面和表单。","https://github.com/anthropics/skills/tree/main/skills/pdf","PDF 扫描件 合同 论文","skill","anthropics/skills"],
+  ["文档共创技能","reading",["student","office","project","operations","education"],"引导 AI 助手分步骤起草和校订方案、提案或技术文档。","https://github.com/anthropics/skills/tree/main/skills/doc-coauthoring","需求文档 写作 提案","skill","anthropics/skills"],
+  ["视觉海报技能","design",["creative","education","operations"],"引导 AI 助手为海报和封面制定视觉方案，输出 PNG 或 PDF。","https://github.com/anthropics/skills/tree/main/skills/canvas-design","版式 海报 封面","skill","anthropics/skills"],
+  ["音频转文字技能","media",["student","office","creative","education"],"在 Codex 中按官方技能说明，将音频整理成文字或带时间戳的记录。","https://github.com/openai/skills/tree/main/skills/.curated/transcribe","Codex 访谈 录音 会议纪要","skill","openai/skills"],
+  ["Jupyter 笔记本技能","dev",["student","education","data"],"在 Codex 中创建和编辑 Jupyter 笔记本，记录分析过程和结果。","https://github.com/openai/skills/tree/main/skills/.curated/jupyter-notebook","Codex Python 数据分析 实验","skill","openai/skills"],
+  ["会议准备技能","manage",["office","project","operations"],"在 Codex 中按技能说明整理会议背景、议程和会前材料，需要配置 Notion。","https://github.com/openai/skills/tree/main/skills/.curated/notion-meeting-intelligence","Codex Notion 会议 议程","skill","openai/skills"],
+];
+
+const resources = [
+  ...addedResources.filter(row => row[6] === "online"),
+  ...tools.map(row => [...row, "project", repositories[row[0]]]),
+  ...addedResources.filter(row => row[6] !== "online"),
+].map(([name, task, audiences, description, url, keywords, kind, repository]) => ({
+  name, task, audiences, description, url, keywords, kind, repository,
+}));
