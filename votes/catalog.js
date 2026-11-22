@@ -31,7 +31,7 @@ function normalizedEntry(payload) {
 }
 
 async function checkToken(request, secret) {
-  const supplied = request.headers.get("Authorization")?.match(/^Bearer ([a-f0-9]{64})$/)?.[1];
+  const supplied = request.headers.get("Authorization")?.match(/^Bearer ([\x21-\x7e]{8,128})$/)?.[1];
   if (!secret || !supplied) return false;
   const encoder = new TextEncoder();
   const [presented, expected] = await Promise.all([
