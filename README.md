@@ -12,7 +12,11 @@
 
 投票服务源码位于 `votes/`。部署时将 `wrangler.example.jsonc` 复制为实际配置并填写 D1 数据库 ID，执行 `schema.sql`，再用 `python votes/seed.py` 生成初始化 SQL。Worker 部署后，将公开的 `/votes` 地址写进 `docs/vote-config.js`。新增技能时先运行 `python scripts/sync_skill_ballots.py` 分配编号，再向 D1 执行初始化 SQL，为新条目开放投票。初始化 SQL 会保留已有票数。
 
-站点由 `docs/` 发布，条目维护在 `docs/tools.js`。默认按 GitHub Star 降序，技能使用所属仓库的 Star，在线工具没有仓库时保留编排顺序。使用 Node.js、Python 3 和已登录的 GitHub CLI 运行 `python scripts/update_web_stars.py` 可刷新网站的 Star 快照。
+站点由 `docs/` 发布。线上资源通过 [管理后台](https://chenmingyu12345.github.io/github-Atlas/admin/) 维护，`docs/tools.js` 提供初始目录和本地预览数据。后台支持新增、编辑、上下架并查看技能的投票总数。登录密钥存于 Worker 的 `ATLAS_ADMIN_TOKEN` Secret，后台只在当前页面内存中保留输入值。
+
+首次部署目录时，在同一个 D1 数据库执行 `votes/catalog.sql`，再用 `node votes/seed-catalog.mjs` 生成官网旧目录的初始化 SQL。种子保留原有技能投票和浏览器收藏关联，并跳过已迁移的条目。
+
+默认按 GitHub Star 降序，技能使用所属仓库的 Star，在线工具没有仓库时保留编排顺序。使用 Node.js、Python 3 和已登录的 GitHub CLI 运行 `python scripts/update_web_stars.py` 可刷新内置仓库的 Star 快照。
 
 ### 选题来源
 

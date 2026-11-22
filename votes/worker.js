@@ -1,3 +1,5 @@
+import {adminCatalog, publicCatalog} from "./catalog.js";
+
 const totalsSql = `
   SELECT b.id,
          b.legacy_recommend + COUNT(CASE WHEN v.choice = 1 THEN 1 END) AS recommend,
@@ -20,10 +22,12 @@ export default {
     const respond = (value, status = 200) => Response.json(value, {status, headers});
     if (origin && origin !== env.ATLAS_ORIGIN) return respond({error: "Origin not allowed"}, 403);
     const path = new URL(request.url).pathname;
-    if (path !== "/votes") return respond({error: "Not found"}, 404);
     if (request.method === "OPTIONS") return new Response(null, {status: 204, headers});
 
     try {
+      if (path === "/catalog") return await publicCatalog(request, env, respond);
+      if (path.startsWith("/admin/")) return await adminCatalog(request, env, respond, path);
+      if (path !== "/votes") return respond({error: "Not found"}, 404);
       const authorization = request.headers.get("Authorization") || "";
       const voter = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
       if (voter && !voterPattern.test(voter)) return respond({error: "Invalid voter"}, 400);
@@ -53,8 +57,8 @@ export default {
       ]);
       return updated.results.length ? respond(updated.results[0]) : respond({error: "Ballot not found"}, 404);
     } catch (error) {
-      console.error("Vote request failed", error.message);
-      return respond({error: "Voting unavailable"}, 503);
+      console.error("Atlas API request failed", error.message);
+      return respond({error: "服务暂不可用，请稍后重试"}, 503);
     }
   },
 };

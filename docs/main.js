@@ -29,12 +29,14 @@ const developmentTools = new Set([
   "PaddleOCR", "Pandoc", "RapidOCR", "Tesseract OCR", "Whisper",
 ]);
 const starFormatter = new Intl.NumberFormat("zh-CN");
-const list = resources.map(resource => ({
+const indexResources = items => items.map(resource => ({
   ...resource,
-  stars: starSnapshot.counts[resource.repository] ?? null,
+  bookmarkKey: resource.bookmarkKey ?? resource.name,
+  stars: starSnapshot.counts[resource.repository] ?? resource.stars ?? null,
   searchable: [resource.name, resource.description, resource.keywords, resource.repository,
     tasks[resource.task], kindLabels[resource.kind]].join(" ").toLocaleLowerCase("zh-CN"),
 }));
+let list = null;
 
 let bookmarks = new Set();
 try {
@@ -82,8 +84,8 @@ for (const [key, label] of Object.entries(tasks)) {
   makeFilter(taskButtons, key, label);
 }
 
-function updateBookmarkButton(button, name) {
-  const active = bookmarks.has(name);
+function updateBookmarkButton(button, {name, bookmarkKey}) {
+  const active = bookmarks.has(bookmarkKey);
   button.textContent = active ? "★" : "☆";
   button.setAttribute("aria-pressed", active);
   button.setAttribute("aria-label", `收藏 ${name}`);
@@ -151,7 +153,7 @@ function addInstallPrompt(card, resource) {
 }
 
 function addSkillFeedback(card, resource) {
-  const sources = skillSources[resource.name];
+  const sources = skillSources[resource.bookmarkKey];
   if (sources) {
     const sourceSection = card.querySelector(".skill-sources");
     sourceSection.hidden = false;
@@ -166,7 +168,7 @@ function addSkillFeedback(card, resource) {
       sourceSection.querySelector("ul").append(item);
     }
   }
-  const ballot = ballotNumbers[resource.url];
+  const ballot = resource.ballotId ?? ballotNumbers[resource.url];
   if (!ballot) return;
   const section = card.querySelector(".skill-vote");
   section.hidden = false;
@@ -249,7 +251,7 @@ async function castVote(id, choice) {
 }
 
 function createCard(resource) {
-  const {name, task, description, url, kind, repository, stars} = resource;
+  const {name, task, description, url, kind, repository, stars, bookmarkKey} = resource;
   const card = byId("card-template").content.cloneNode(true);
   const type = card.querySelector(".tool-type");
   type.querySelector("img").src = `assets/${kind}.webp`;
@@ -277,10 +279,10 @@ function createCard(resource) {
   if (repoUrl) source.href = repoUrl;
   source.setAttribute("aria-label", `查看 ${name} 的 GitHub 仓库（新标签页）`);
   const button = card.querySelector(".bookmark");
-  updateBookmarkButton(button, name);
+  updateBookmarkButton(button, resource);
   button.addEventListener("click", () => {
-    if (bookmarks.has(name)) bookmarks.delete(name);
-    else bookmarks.add(name);
+    if (bookmarks.has(bookmarkKey)) bookmarks.delete(bookmarkKey);
+    else bookmarks.add(bookmarkKey);
     try {
       localStorage.setItem(storageKey, JSON.stringify([...bookmarks]));
     } catch {}
@@ -288,7 +290,7 @@ function createCard(resource) {
       render();
       (results.querySelector(".bookmark") || savedButton).focus();
     } else {
-      updateBookmarkButton(button, name);
+      updateBookmarkButton(button, resource);
       updateSavedButton();
     }
   });
@@ -301,10 +303,11 @@ function updateSavedButton() {
 }
 
 function render(reset = true) {
+  if (!list) return;
   if (reset) visibleCount = pageSize;
   const words = search.value.trim().toLocaleLowerCase("zh-CN").split(/\s+/).filter(Boolean);
   const audience = list.filter(resource =>
-    (bookmarksOnly ? bookmarks.has(resource.name) : currentRole === "all" || resource.audiences.includes(currentRole))
+    (bookmarksOnly ? bookmarks.has(resource.bookmarkKey) : currentRole === "all" || resource.audiences.includes(currentRole))
     && (!currentKind || resource.kind === currentKind));
   const availableTasks = new Set(audience.map(resource => resource.task));
   if (!availableTasks.has(currentTask)) currentTask = "all";
@@ -395,4 +398,27 @@ byId("search-form").addEventListener("submit", event => {
   render();
   byId("result-title").scrollIntoView({block: "start"});
 });
-render();
+async function loadCatalog() {
+  if (!voteEndpoint || location.protocol === "file:") {
+    list = indexResources(resources);
+    render();
+    return;
+  }
+  byId("result-count").textContent = "正在加载目录…";
+  results.replaceChildren();
+  try {
+    const response = await fetch(new URL("/catalog", voteEndpoint), {signal: AbortSignal.timeout(8000)});
+    if (!response.ok) throw new Error("Cannot load catalog");
+    list = indexResources(await response.json());
+    render();
+  } catch {
+    byId("result-count").textContent = "目录暂时无法加载";
+    const retry = document.createElement("button");
+    retry.type = "button";
+    retry.className = "more";
+    retry.textContent = "重新加载目录";
+    retry.addEventListener("click", loadCatalog);
+    results.replaceChildren(retry);
+  }
+}
+loadCatalog();
